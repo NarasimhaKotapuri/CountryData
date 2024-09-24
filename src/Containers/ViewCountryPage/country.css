@@ -1,0 +1,64 @@
+.container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 600px;
+    width: 100%; /* Make the container take full width on smaller screens */
+    text-align: center;
+}
+
+.country-detail {
+    margin-top: 20px;
+}
+
+.flag {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 15px 0;
+    color: #333;
+}
+
+p {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #555;
+}
+
+strong {
+    color: #333;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 20px;
+    }
+
+    p {
+        font-size: 14px;
+    }
+
+    .container {
+        padding: 15px; /* Reduce padding on smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 18px;
+    }
+
+    p {
+        font-size: 13px;
+    }
+
+    .container {
+        padding: 10px; /* Further reduce padding */
+    }
+}
