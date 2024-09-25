@@ -1,5 +1,7 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
+import clsx from "clsx";
 
 import useFetch from "../../utils/useFetch";
 import CountryCard from "./countryCard";
@@ -7,13 +9,34 @@ import { MainDiv, Filters, ImageDiv } from "./elements";
 import { updateCountryData } from "../../redux/actions";
  
 import './homepage.css'
-import { useEffect, useMemo, useState } from "react";
 import loader from "../../assets/images/loader.gif";
+import useLazyLoad from "../../lazyLoad/useLazyLoad";
+import { LoadingCards } from './LoadingCards'
+
+
+const NUM_PER_PAGE = 8;
+const TOTAL_PAGES = 63;
+
 function HomePage(props) {
     let [data] = useFetch("https://restcountries.com/v3.1/all");
 
     const[sort, setSort] = useState(false)
     const[searchBy, setSearchBy] = useState('')
+
+    const triggerRef = useRef(null);
+    const onGrabData = (currentPage) => {
+        // This would be where you'll call your API
+        return new Promise((resolve) => {
+        setTimeout(() => {
+            const data = props.countries && props.countries.slice(
+            ((currentPage - 1)%TOTAL_PAGES) * NUM_PER_PAGE,
+            NUM_PER_PAGE * (currentPage%TOTAL_PAGES)
+            );
+            resolve(data);
+        }, 3000);
+        });
+    }; 
+
     useEffect(()=>{
         props.updateCountryData(data)
     },data)
@@ -45,16 +68,8 @@ function HomePage(props) {
         }
     }
     let disticnct = {}
-    // let regions = data && data.map(item=> {
-    //     if(!disticnct[item.region])
-    //     {
-    //         disticnct[item.region] = true
-    //         return(<option value={item.region}>{item.region}</option>)
-    //     }
-    //     return ''
-    // })
     const expensiveCalculation = (data) => {
-        let temp =data.map(item=> {
+        let temp = data && data.map(item=> {
             if(!disticnct[item.region])
             {
                 disticnct[item.region] = true
@@ -71,20 +86,11 @@ function HomePage(props) {
         let regionsOrg = data.filter(item => item.region==region || !region)
         props.updateCountryData(regionsOrg)
     }
-    const sentinel = document.getElementById('country-container');
-    const observer = new IntersectionObserver(entries => {
-        console.log('cam');
-        
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                // loadCards(); // Load more cards when the sentinel is in view
-                observer.unobserve(entry.target); // Stop observing the current sentinel
-            }
-        });
-    }, {
-        rootMargin: '100px' // Trigger loading a bit before the sentinel is in view
-    });
-    // observer.observe(sentinel);
+    const updateTheCountryData = dataOrg =>{
+        props.updateCountryData(dataOrg)
+    }
+    const { data: loadImages , loading } = useLazyLoad({ triggerRef, onGrabData, updateTheCountryData  });
+
     return (
         <div>
             <Filters>
@@ -123,6 +129,9 @@ function HomePage(props) {
                     })
                 : <ImageDiv src={loader} width={50} height={50} alt="loader"/>}
             </MainDiv>
+            {/* {props.countries && props.countries.length ? <div ref={triggerRef} className={clsx('trigger', {visible : loading})}>
+               <LoadingCards />
+            </div>: <LoadingCards />} */}
         </div>
     );
 }
