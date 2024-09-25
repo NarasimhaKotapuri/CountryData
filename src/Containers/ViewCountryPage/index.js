@@ -12,9 +12,8 @@ function ViewCountryPage(props) {
   const [showMap, setShowMap] = useState(false)
   return (
     <div class="container">
-        <Header />
         <div class="country-detail">
-            <img src={data.flags.png} alt="Flag" height={100} width={100}  class="flag" />
+            <img src={data.flags.png} loading='lazy' alt="Flag" height={100} width={100}  class="flag" />
             <h1>{data.name.common}</h1>
             <p><strong>Capital:</strong> {data.capital&&data.capital[0]}</p>
             <p><strong>Population:</strong> {data.population}</p>

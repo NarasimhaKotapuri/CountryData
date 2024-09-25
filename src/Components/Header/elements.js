@@ -9,7 +9,6 @@ export const HeaderContainer = styled.div`
   border-bottom: 1px solid #b7c8da;
   box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
   transform: box-shadow 0.15s ease 0.1;
-  position: fixed;
   background-color: #a2c617;
   color: white;
 `;

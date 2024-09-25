@@ -15,6 +15,9 @@ export const MainDiv = styled.div`
     gap: 40px;
     margin: 5%;
 `;
+export const ImageDiv = styled.img`
+  margin-left: 550px;
+`
 export const Filters = styled.div`
   display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));

@@ -3,11 +3,12 @@ import { connect } from 'react-redux';
 
 import useFetch from "../../utils/useFetch";
 import CountryCard from "./countryCard";
-import { MainDiv, Filters } from "./elements";
+import { MainDiv, Filters, ImageDiv } from "./elements";
 import { updateCountryData } from "../../redux/actions";
  
 import './homepage.css'
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import loader from "../../assets/images/loader.gif";
 function HomePage(props) {
     let [data] = useFetch("https://restcountries.com/v3.1/all");
 
@@ -44,21 +45,46 @@ function HomePage(props) {
         }
     }
     let disticnct = {}
-    let regions = data && data.map(item=> {
-        if(!disticnct[item.region])
-        {
-            disticnct[item.region] = true
-            return(<option value={item.region}>{item.region}</option>)
-        }
-        return ''
-    })
-
+    // let regions = data && data.map(item=> {
+    //     if(!disticnct[item.region])
+    //     {
+    //         disticnct[item.region] = true
+    //         return(<option value={item.region}>{item.region}</option>)
+    //     }
+    //     return ''
+    // })
+    const expensiveCalculation = (data) => {
+        let temp =data.map(item=> {
+            if(!disticnct[item.region])
+            {
+                disticnct[item.region] = true
+                return(<option value={item.region}>{item.region}</option>)
+            }
+            return ''
+        })
+        return temp
+      };
+    const regions = useMemo(() => expensiveCalculation(data), [data]);
     const filterRegion = e =>{
         let region = e.target.value
         
-        let regionsOrg = data.filter(item => item.region==region)
+        let regionsOrg = data.filter(item => item.region==region || !region)
         props.updateCountryData(regionsOrg)
     }
+    const sentinel = document.getElementById('country-container');
+    const observer = new IntersectionObserver(entries => {
+        console.log('cam');
+        
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // loadCards(); // Load more cards when the sentinel is in view
+                observer.unobserve(entry.target); // Stop observing the current sentinel
+            }
+        });
+    }, {
+        rootMargin: '100px' // Trigger loading a bit before the sentinel is in view
+    });
+    // observer.observe(sentinel);
     return (
         <div>
             <Filters>
@@ -71,7 +97,8 @@ function HomePage(props) {
                 </div>
                 <div style={{display:'flex'}}>
                     <h3>Region : </h3>
-                    <select onClick={e=>filterRegion(e)}>
+                    <select onChange={e=>filterRegion(e)}>
+                        <option value=''>All</option>
                         {regions}
                     </select>
                 </div>
@@ -82,7 +109,7 @@ function HomePage(props) {
                     <button onClick={e=>{if(data)props.updateCountryData(data);setSort(sort);setSearchBy('')}}>RESET</button>
                 </div>
             </Filters>
-            <MainDiv>
+            <MainDiv id="country-container">
                 {props.countries && props.countries.length ? 
                     props.countries.map((item,i)=>{
                         return (
@@ -90,10 +117,11 @@ function HomePage(props) {
                                 to={{
                                     pathname: `/country/${i}`,
                                 }}
+                                style={{textDecoration: 'none'}}
                             ><CountryCard data={item}/></Link>
                         )
                     })
-                : null}
+                : <ImageDiv src={loader} width={50} height={50} alt="loader"/>}
             </MainDiv>
         </div>
     );

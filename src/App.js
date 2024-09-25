@@ -13,7 +13,7 @@ function App() {
   return (
     <Provider store={store}>
       <div className="App">
-        {/* <Header /> */}
+        <Header />
         <Switch>
             <Route exact path="/" component={HomePage} />
             <Route exact path="/country/:id" component={ViewCountryPage} />
